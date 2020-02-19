@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+    <style>
+        @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+        .container {
+            width: 80%;
+            margin: 15px auto;
+        }
+
+        h3 {
+            text-align: center;
+            font-family: "Noto Sans KR",sans-serif;
+        }
+    </style>
+  </head>
+  <body>
+    <h3>Rader Chart</h3>
+    <main class="container">
+        <div>
+          <canvas id="radarChart"></canvas>
+        </div>
+      </main>
+      <script>
+            var ctx = document.getElementById("radarChart").getContext('2d');
+            var radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ["2", "1", "0", "4", "3"],
+                datasets: [{
+                label: 'number',
+                data: [20, 8, 5, 9, 17],
+                backgroundColor: "rgba(255,0,0,0.5)",
+                borderColor: "#C62917"
+                }]
+            },
+            options: {
+                scale : {
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: 30,
+                        stepSize: 10
+                    }
+                },
+                tooltip:{
+                    mode:'index',
+                    intersect:false,
+                    display:false
+                }
+            }
+            });
+      </script>
+  </body>
+</html>
