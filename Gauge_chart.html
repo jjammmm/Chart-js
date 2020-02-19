@@ -1,0 +1,180 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+        <canvas id="myChart" width="100px" height="100px"></canvas>
+        <script>
+            Chart.defaults.doughnutLabels = Chart.helpers.clone(Chart.defaults.doughnut);
+
+            var helpers = Chart.helpers;
+            var defaults = Chart.defaults;
+
+            Chart.controllers.doughnutLabels = Chart.controllers.doughnut.extend({
+            updateElement: function(arc, index, reset) {
+                var _this = this;
+                var chart = _this.chart,
+                chartArea = chart.chartArea,
+                opts = chart.options,
+                animationOpts = opts.animation,
+                arcOpts = opts.elements.arc,
+                centerX = (chartArea.left + chartArea.right) / 2,
+                centerY = (chartArea.top + chartArea.bottom) / 2,
+                startAngle = opts.rotation, // non reset case handled later
+                endAngle = opts.rotation, // non reset case handled later
+                dataset = _this.getDataset(),
+                circumference = reset && animationOpts.animateRotate ? 0 : arc.hidden ? 0 : _this.calculateCircumference(dataset.data[index]) * (opts.circumference / (2.0 * Math.PI)),
+                innerRadius = reset && animationOpts.animateScale ? 0 : _this.innerRadius,
+                outerRadius = reset && animationOpts.animateScale ? 0 : _this.outerRadius,
+                custom = arc.custom || {},
+                valueAtIndexOrDefault = helpers.getValueAtIndexOrDefault;
+
+                helpers.extend(arc, {
+                    // Utility
+                    _datasetIndex: _this.index,
+                    _index: index,
+
+                    // Desired view properties
+                    _model: {
+                        x: centerX + chart.offsetX,
+                        y: centerY + chart.offsetY,
+                        startAngle: startAngle,
+                        endAngle: endAngle,
+                        circumference: circumference,
+                        outerRadius: outerRadius,
+                        innerRadius: innerRadius,
+                        label: valueAtIndexOrDefault(dataset.label, index, chart.data.labels[index])
+                    },
+
+                    draw: function() {
+                        var ctx = this._chart.ctx,
+                        vm = this._view,
+                        sA = vm.startAngle,
+                        eA = vm.endAngle,
+                        opts = this._chart.config.options;
+
+                        var labelPos = this.tooltipPosition();
+                        var segmentLabel = vm.circumference / opts.circumference * 100;
+
+                        ctx.beginPath();
+
+                        ctx.arc(vm.x, vm.y, vm.outerRadius, sA, eA);
+                        ctx.arc(vm.x, vm.y, vm.innerRadius, eA, sA, true);
+
+                        ctx.closePath();
+                        ctx.strokeStyle = vm.borderColor;
+                        ctx.lineWidth = vm.borderWidth;
+
+                        ctx.fillStyle = vm.backgroundColor;
+
+                        ctx.fill();
+                        ctx.lineJoin = 'bevel';
+
+                        if (vm.borderWidth) {
+                            ctx.stroke();
+                        }
+
+                        if (vm.circumference > 0.0015) { // Trying to hide label when it doesn't fit in segment
+                            ctx.beginPath();
+                            ctx.font = helpers.fontString(opts.defaultFontSize, opts.defaultFontStyle, opts.defaultFontFamily);
+                            ctx.fillStyle = "#190707";
+                            ctx.textBaseline = "top";
+                            ctx.textAlign = "center";
+
+                            // Round percentage in a way that it always adds up to 100%
+                            // ctx.fillText(segmentLabel.toFixed(0), labelPos.x, labelPos.y);
+                        }
+                        //display in the center the total sum of all segments
+                        var total = dataset.data.reduce((sum, val) => sum + val, 0);
+                        //ctx.fillText('Total = ' + total, vm.x, vm.y - 20, 200);
+                        ctx.fillText(dbscore, vm.x, vm.y - 20, 200);
+                        ctx.fillText('0', vm.x - 200, vm.y + 30);
+                        ctx.fillText('1', vm.x - 210, vm.y - 200);
+                        ctx.fillText('2', vm.x, vm.y - 290);
+                        ctx.fillText('3', vm.x + 210, vm.y - 200);
+                        ctx.fillText('4', vm.x + 200, vm.y + 30);
+                    }
+                });
+
+                var model = arc._model;
+                model.backgroundColor = custom.backgroundColor ? custom.backgroundColor : valueAtIndexOrDefault(dataset.backgroundColor, index, arcOpts.backgroundColor);
+                model.hoverBackgroundColor = custom.hoverBackgroundColor ? custom.hoverBackgroundColor : valueAtIndexOrDefault(dataset.hoverBackgroundColor, index, arcOpts.hoverBackgroundColor);
+                model.borderWidth = custom.borderWidth ? custom.borderWidth : valueAtIndexOrDefault(dataset.borderWidth, index, arcOpts.borderWidth);
+                model.borderColor = custom.borderColor ? custom.borderColor : valueAtIndexOrDefault(dataset.borderColor, index, arcOpts.borderColor);
+
+                // Set correct angles if not resetting
+                if (!reset || !animationOpts.animateRotate) {
+                if (index === 0) {
+                    model.startAngle = opts.rotation;
+                } else {
+                    model.startAngle = _this.getMeta().data[index - 1]._model.endAngle;
+                }
+
+                model.endAngle = model.startAngle + model.circumference;
+                }
+
+                arc.pivot();
+            }
+            });
+
+            var dbscore = 65; // import Data
+            var data = [dbscore, 100-dbscore];  // % print percent
+
+            var config = {
+                type: 'doughnutLabels',
+                data: {
+                    datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#FF8373',
+                        '#F0F2F8'
+                    ]
+                    }],
+                    labels: [
+                        "result_score",
+                        "none"
+                    ]
+            },
+            options: {
+                circumference: Math.PI,
+                rotation: 1.0 * Math.PI,
+                responsive: true,
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    text: 'Danger Level'
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                },
+                hover: {
+                    mode :null
+                },
+                tooltips: {
+                    enabled:false
+                    // callbacks: {
+                    //     label: function(tooltipItem, data) {
+
+                    //     var dataset = data.datasets[tooltipItem.datasetIndex];
+                    //     var total = dataset.data.reduce(function(previousValue, currentValue, currentIndex, array) {
+                    //         return previousValue + currentValue;
+                    //     });
+                    //     var currentValue = dataset.data[tooltipItem.index];
+                    //     //var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
+                    //     return window.upDownChart.data.labels[tooltipItem.index] + " " + currentValue + "hr";
+                    //     }
+                    // }
+                }
+            }
+            };
+
+            var ctx = document.getElementById("myChart").getContext("2d");
+            window.upDownChart = new Chart(ctx, config);
+
+        </script>
+    </body>
+</html>
