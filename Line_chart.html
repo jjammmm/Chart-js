@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Colorful Chart.js</title>
+    </head>
+    <style>
+        @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+        .container {
+            width : 50%;
+            height : 50%;
+        }
+        h2 {
+            text-align: left;
+            font-family: "Noto Sans KR",sans-serif;
+        }
+    </style>
+    <body>
+        <h2>Line Chart</h2>
+        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.bundle.min.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <div>
+            <canvas id="myChart"></canvas>
+        </div>
+        <script>
+            var ctx = document.getElementById("myChart").getContext('2d');
+
+            // pink gradient
+            var gradientFill_1 = ctx.createLinearGradient(0,150,0,500);
+            gradientFill_1.addColorStop(0,"rgba(84,208,255,0.6)");
+            gradientFill_1.addColorStop(1,"rgba(255,255,255,0)");
+
+            // blue gradient
+            var gradientFill_2 = ctx.createLinearGradient(0,150,0,500);
+            gradientFill_2.addColorStop(0,"rgba(255,167,200,0.6)");
+            gradientFill_2.addColorStop(1,"rgba(255,255,255,0)");
+
+            // x-axis
+            var date = ["MON", "TUE", "WED", "THU", "FRI", "SAT","SUN"];
+
+            var data = {
+                labels: date,
+                datasets: [{
+                    label: '🙂',
+                    data: [70, 18, 57, 38, 60, 40, 22], // import Data
+                    backgroundColor: gradientFill_1,
+                    borderColor: [
+                        'rgba(84,208,255,1)'
+                    ],
+                    borderWidth: 1
+                },
+                {
+                    label: '☹️',
+                    data: [50, 25, 51, 65, 53, 70, 90], // import Data
+                    backgroundColor: gradientFill_2,
+                    borderColor: [
+                        'rgba(255,167,200,1)'
+                    ],
+                    borderWidth: 1
+                }
+                ]
+            }
+
+            var option = {
+                responsive : true,
+                maintainAspectRatio: true,
+                scales: {
+                    xAxes: [{
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Date'
+                        }
+                    }],
+                    yAxes: [{
+                        scaleLabel: {
+                            display: false,
+                            labelString: 'Sentiment Score'
+                        },
+                        ticks: {
+                            max: 100,
+                            min: 0,
+                            stepsize : 20
+                            // beginAtZero:true
+                        }
+                    }]
+                },
+                legend:{
+                    position: 'right'
+                },
+                tooltips: {
+                    mode:'index',
+                    intersect:false,
+                    backgroundColor : "#e1e1e1",
+                    titleFontSize : 0,
+                    titleFontColor : "#43425D",
+                    bodyFontSize : 13,
+                    bodyFontColor : "#43425D",
+                    yAlign : 'bottom',
+                    caretPadding : 5,
+                    displayColors : false
+                }
+            }
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: option
+            });
+
+
+        </script>
+   </body>
+</html>
