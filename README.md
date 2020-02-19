@@ -11,7 +11,7 @@
 <br><br>
 <h4>Stack Bar Chart</h4>
 <div>
-<img width="300" src="https://user-images.githubusercontent.com/42767102/74828059-cae9d580-5351-11ea-80eb-351e769f603a.png">
+<img width="500" src="https://user-images.githubusercontent.com/42767102/74828059-cae9d580-5351-11ea-80eb-351e769f603a.png">
 </div>
 
 <br><br>
@@ -23,5 +23,5 @@
 <br><br>
 <h4>Line Chart</h4>
 <div>
-<img width="300" src="https://user-images.githubusercontent.com/42767102/74828231-17351580-5352-11ea-9c98-ff01018f6c32.png">
+<img width="500" src="https://user-images.githubusercontent.com/42767102/74828231-17351580-5352-11ea-9c98-ff01018f6c32.png">
 </div>
